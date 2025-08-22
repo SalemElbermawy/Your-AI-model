@@ -1,9 +1,0 @@
-scikit-learn       ==       1.7.1
-keras            ==         3.11.3
-Markdown            ==      3.8.2
-matplotlib             ==   3.10.5
-numpy            ==         2.2.6
-pandas              ==      2.3.2
-tensorflow       ==         2.20.0
-ultralytics        ==       8.3.184
-xgboost           ==        3.0.4
