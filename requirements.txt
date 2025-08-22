@@ -8,10 +8,7 @@ ultralytics==8.3.184
 tensorflow==2.20.0
 numpy==2.2.6
 pytesseract==0.3.13
-opencv-python-headless==4.8.0.88
-
-
-
+opencv-python==4.12.0
 
 
 
