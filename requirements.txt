@@ -6,7 +6,7 @@ keras==3.11.3
 plotly==6.3.0
 ultralytics==8.3.184
 tensorflow==2.20.0
-numpy==2.2.6
+numpy==1.21.6
 pytesseract==0.3.13
 opencv-python-headless==4.8.1.78
 
