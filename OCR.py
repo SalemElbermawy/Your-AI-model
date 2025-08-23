@@ -1,3 +1,12 @@
+
+import shutil
+import pytesseract
+
+pytesseract.pytesseract.tesseract_cmd = shutil.which("tesseract") or "/usr/bin/tesseract"
+
+
+
+
 import streamlit as st
 import cv2
 import numpy as np
