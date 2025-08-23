@@ -7,3 +7,4 @@ keras==3.3.0
 plotly==6.3.0
 ultralytics==8.3.184
 pytesseract==0.3.13
+scikit-learn==1.7.1
