@@ -82,7 +82,8 @@ if file is not None:
 
     if data[target].dtype == "object":
         imputer = SimpleImputer(strategy="most_frequent")
-        data[target] = imputer.fit_transform([data[target]])[0]
+        data[[target]] = imputer.fit_transform(data[[target]])
+
         encoder = LabelEncoder()
         data[target] = encoder.fit_transform(data[target])
     else:
