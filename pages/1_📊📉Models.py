@@ -18,14 +18,18 @@ from keras.layers import Dense
 st.set_page_config(page_title="AI Regression Models", page_icon="📊", layout="wide")
 
 def mm(model__, dic_param):
-    main_pip = Pipeline(steps=[
-        ("preprocces", preproccessing),
-        ("model", model__)
-    ])
-    param_dic = dic_param
-    with st.spinner("⏳ Training your model, please wait..."):
-        final_model = RandomizedSearchCV(main_pip, param_distributions=param_dic, n_iter=5, cv=5)
-        final_model.fit(data.drop(target, axis="columns"), data[target])
+    if "trained_model" not in st.session_state:
+        main_pip = Pipeline(steps=[
+            ("preprocces", preproccessing),
+            ("model", model__)
+        ])
+        param_dic = dic_param
+        with st.spinner("⏳ Training your model, please wait..."):
+            final_model = RandomizedSearchCV(main_pip, param_distributions=param_dic, n_iter=5, cv=5)
+            final_model.fit(data.drop(target, axis="columns"), data[target])
+        st.session_state.trained_model = final_model
+    else:
+        final_model = st.session_state.trained_model
 
     train_data = data.drop(target, axis="columns")
     train_columns = train_data.columns
@@ -45,7 +49,7 @@ def mm(model__, dic_param):
     bu = st.button("🚀 Predict the value")
     if bu:
         with st.spinner("🔍 Calculating prediction..."):
-            predict_data = final_model.predict(test_data)
+            predict_data = st.session_state.trained_model.predict(test_data)
             st.success(f"✅ Predicted Value: {predict_data[0]}")
 
 st.title("📌 AI Regression Models Playground")
@@ -82,12 +86,12 @@ if file is not None:
 
     if data[target].dtype == "object":
         imputer = SimpleImputer(strategy="most_frequent")
-        data[target] = imputer.fit_transform([data[target]])[0]
+        data[[target]] = imputer.fit_transform(data[[target]])
         encoder = LabelEncoder()
         data[target] = encoder.fit_transform(data[target])
     else:
         imputer = SimpleImputer(strategy="mean")
-        data[target] = (imputer.fit_transform([data[target]]))[0]
+        data[[target]] = imputer.fit_transform(data[[target]])
 
     st.subheader("📈 Choose your Regression Model")
     numerical_pipe = Pipeline(steps=[
@@ -108,13 +112,16 @@ if file is not None:
         "GradientBoostingRegressor", "XGBoost", "SVR", "KNeighborsRegressor", "DNN"
     ])
 
-    # Same model logic (no changes)
     if choosed_model == "LinearRegression":
-        main_pip = Pipeline(steps=[
-            ("preprocces", preproccessing),
-            ("model", LinearRegression())
-        ])
-        main_pip.fit(data.drop(target, axis="columns"), data[target])
+        if "trained_model" not in st.session_state:
+            main_pip = Pipeline(steps=[
+                ("preprocces", preproccessing),
+                ("model", LinearRegression())
+            ])
+            main_pip.fit(data.drop(target, axis="columns"), data[target])
+            st.session_state.trained_model = main_pip
+        else:
+            main_pip = st.session_state.trained_model
 
         st.subheader("🔢 Enter the input values for prediction")
         train_data = data.drop(target, axis="columns")
@@ -130,7 +137,7 @@ if file is not None:
         test_data = pd.DataFrame([values])
         st.write(test_data)
         if st.button("🚀 Predict the value"):
-            predict_data = main_pip.predict(test_data)
+            predict_data = st.session_state.trained_model.predict(test_data)
             st.success(f"✅ Predicted Value: {predict_data[0]}")
 
     elif choosed_model == "SVR":
@@ -190,18 +197,22 @@ if file is not None:
         })
 
     elif choosed_model == "DNN":
-        model = Sequential([
-            Dense(256, activation="tanh"),
-            Dense(128, activation="tanh"),
-            Dense(64, activation="tanh"),
-            Dense(32, activation="tanh"),
-            Dense(16, activation="tanh"),
-            Dense(8, activation="tanh"),
-            Dense(1, activation="linear"),
-        ])
-        model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-        dd = preproccessing.fit_transform(data.drop(target, axis="columns"))
-        model.fit(dd, data[target])
+        if "trained_model" not in st.session_state:
+            model = Sequential([
+                Dense(256, activation="tanh"),
+                Dense(128, activation="tanh"),
+                Dense(64, activation="tanh"),
+                Dense(32, activation="tanh"),
+                Dense(16, activation="tanh"),
+                Dense(8, activation="tanh"),
+                Dense(1, activation="linear"),
+            ])
+            model.compile(optimizer='adam', loss='mse', metrics=['mae'])
+            dd = preproccessing.fit_transform(data.drop(target, axis="columns"))
+            model.fit(dd, data[target])
+            st.session_state.trained_model = model
+        else:
+            model = st.session_state.trained_model
 
         train_data = data.drop(target, axis="columns")
         train_columns = train_data.columns
@@ -252,6 +263,3 @@ if file is not None:
         y = st.selectbox("Choose numerical feature:", options=(data_graph.select_dtypes(include=["number"])).columns, key="tab_3_selectingy")
         fig_4 = px.histogram(data_graph, x=x, y=y, title="Categorical vs Numerical", template="plotly_dark")
         st.plotly_chart(fig_4, use_container_width=True)
-
-
-

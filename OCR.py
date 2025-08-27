@@ -28,7 +28,7 @@ if image_ocr is not None:
             
             cv2.rectangle(img_rgb, top_left, bottom_right, (255, 0, 0), 2)
            
-            cv2.putText(img_rgb, text, top_left, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            
 
     st.image(img_rgb, caption="Detected Text", use_container_width=True)
 
